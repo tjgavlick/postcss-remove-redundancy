@@ -1,0 +1,56 @@
+{
+  "name": "postcss-remove-redundancy",
+  "version": "0.0.0",
+  "description": "PostCSS plugin that removes redundant rules for a slimmer stylesheet",
+  "keywords": [
+    "postcss",
+    "css",
+    "postcss-plugin",
+    "redundant",
+    "redundancy",
+    "deduplicate",
+    "dedupe"
+  ],
+  "author": "tjgavlick <8879532+tjgavlick@users.noreply.github.com>",
+  "license": "MIT",
+  "repository": "tjgavlick/postcss-remove-redundancy",
+  "bugs": {
+    "url": "https://github.com/tjgavlick/postcss-remove-redundancy/issues"
+  },
+  "homepage": "https://github.com/tjgavlick/postcss-remove-redundancy",
+  "dependencies": {
+    "postcss": "^6.0.16",
+    "postcss-selector-parser": "^5.0.0-rc.3"
+  },
+  "devDependencies": {
+    "eslint": "^4.18.2",
+    "eslint-config-postcss": "^2.0.2",
+    "jest": "^22.4.2"
+  },
+  "scripts": {
+    "test": "jest && eslint *.js"
+  },
+  "eslintConfig": {
+    "extends": "eslint-config-postcss/es5",
+    "env": {
+      "jest": true,
+      "es6": true
+    },
+    "rules": {
+      "indent": [
+        "error",
+        2
+      ],
+      "max-len": [
+        "error",
+        {
+          "code": 120
+        }
+      ],
+      "_comment": "constrain line length to about a github diff view"
+    }
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}
