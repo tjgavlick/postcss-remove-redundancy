@@ -30,7 +30,7 @@ it('collapses a redundant rule', () => {
 `);
 });
 
-/*
+
 it('correctly places collapsed rules', () => {
   return run(`
 .foo {
@@ -55,8 +55,8 @@ it('correctly places collapsed rules', () => {
 }
 `);
 });
-*/
-/*
+
+
 it('is not thrown off by formatting', () => {
   return run(`
 .foo + .bar {
@@ -68,14 +68,14 @@ it('is not thrown off by formatting', () => {
   font-size: 2em;
 }
 `, `
-.foo + .bar {
+.foo  +     .bar {
   display: block;
   font-size: 2em;
 }
 `);
 });
-*/
-/*
+
+
 it('respects the effect of !important on the cascade', () => {
   return run(`
 .foo {
@@ -124,14 +124,14 @@ it('handles multiple !importants', () => {
 
 it('combines adjacent occurrences of the same property', () => {
   return run(`
-.foo {
+.foo, .bar {
   font-size: 2em;
 }
-.bar {
+.bar, .baz {
   font-size: 2em;
 }
 `, `
-.foo, .bar {
+.bar, .baz, .foo {
   font-size: 2em;
 }
 `);
@@ -161,7 +161,8 @@ it('does not combine non-adjacent occurrences of the same property', () => {
 }
 `);
 });
-*/
+
+
 /*
 it('collapses properties across different selector permutations', () => {
   return run(`
