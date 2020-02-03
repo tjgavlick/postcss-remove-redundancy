@@ -22,24 +22,20 @@
     "test": "jest && eslint *.js"
   },
   "eslintConfig": {
-    "extends": "eslint-config-postcss/es5",
+    "extends": "eslint:recommended",
     "env": {
       "jest": true,
-      "es6": true
+      "es6": true,
+      "node": true
     },
     "rules": {
-      "indent": [
-        "error",
-        2
-      ],
-      "max-len": [
-        "error",
-        {
-          "code": 120
-        }
-      ],
-      "_comment": "constrain line length to about a github diff view"
+      "indent": ["error", 2],
+      "semi": ["error", "always"],
+      "comma-dangle": ["warn", "only-multiline"]
     }
+  },
+  "engines": {
+    "node": ">=8.0.0"
   },
   "jest": {
     "testEnvironment": "node"
@@ -49,8 +45,7 @@
     "postcss-selector-parser": "^6.0.2"
   },
   "devDependencies": {
-    "eslint": "^6.8.0",
-    "eslint-config-postcss": "^3.0.7",
-    "jest": "^25.1.0"
+    "eslint": "^6.5.1",
+    "jest": "^24.9.0"
   }
 }
