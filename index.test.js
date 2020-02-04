@@ -10,23 +10,30 @@ function run(input, output, opts) {
 }
 
 
-it('runs', () => {
-  return run('a { }', 'a { }');
-});
+// it('runs', () => {
+//   return run('a { }', 'a { }');
+// });
 
-it('normalizes basic selector whitespace', () => {
-  return run(`
-.foo   +   .bar { }
-.foo,.bar,#baz     { }
-.foo.bar  +[ type = "button" ]{ }
-`, `
-.foo + .bar { }
-.foo, .bar, #baz { }
-.foo.bar + [type="button"] { }
-`);
-});
 
-/*
+// it('does not touch unrelated rules', () => {
+//   return run(`
+// .foo {
+//   display: block;
+// }
+// .bar {
+//   display: inline-block;
+// }
+// `, `
+// .foo {
+//   display: block;
+// }
+// .bar {
+//   display: inline-block;
+// }
+// `);
+// });
+
+
 it('collapses a redundant rule', () => {
   return run(`
 .foo {
@@ -41,7 +48,23 @@ it('collapses a redundant rule', () => {
 }
 `);
 });
-*/
+
+
+// it('collapses into a compound rule', () => {
+//   return run(`
+// .foo {
+//   display: block;
+// }
+// .foo, .bar {
+//   display: inline-block;
+// }
+// `, `
+// .foo, .bar {
+//   display: inline-block;
+// }
+// `);
+// });
+
 
 /*
 it('correctly places collapsed rules', () => {
