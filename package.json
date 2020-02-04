@@ -29,9 +29,18 @@
       "node": true
     },
     "rules": {
-      "indent": ["error", 2],
-      "semi": ["error", "always"],
-      "comma-dangle": ["warn", "only-multiline"]
+      "indent": [
+        "error",
+        2
+      ],
+      "semi": [
+        "error",
+        "always"
+      ],
+      "comma-dangle": [
+        "warn",
+        "only-multiline"
+      ]
     }
   },
   "engines": {

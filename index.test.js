@@ -14,6 +14,18 @@ it('runs', () => {
   return run('a { }', 'a { }');
 });
 
+it('normalizes basic selector whitespace', () => {
+  return run(`
+.foo   +   .bar { }
+.foo,.bar,#baz     { }
+.foo.bar  +[ type = "button" ]{ }
+`, `
+.foo + .bar { }
+.foo, .bar, #baz { }
+.foo.bar + [type="button"] { }
+`);
+});
+
 /*
 it('collapses a redundant rule', () => {
   return run(`
