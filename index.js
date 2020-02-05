@@ -6,15 +6,17 @@ module.exports = postcss.plugin('postcss-remove-redundancy', function () {
     root.walkRules(function walkRulesOuter(originRule) {
       const originSelectors = generateSelectorSet(originRule.selector);
       const originStart = originRule.source.start;
-      const originProps = new Set();
+      const originProps = Object.create(null);
 
-      // populate set of this node's declarations for quick checking later
+      // populate object of this node's declarations for quick lookup
       originRule.walkDecls(function gatherOriginProps(decl) {
-        originProps.add(decl.prop);
+        originProps[decl.prop] = Object.create(null);
+        originProps[decl.prop].value = decl.value;
+        originProps[decl.prop].important = decl.important;
       });
 
       // if rule is empty, kill it and move on
-      if (originProps.size === 0) {
+      if (Object.keys(originProps).length === 0) {
         originRule.remove();
         return;
       }
@@ -28,22 +30,46 @@ module.exports = postcss.plugin('postcss-remove-redundancy', function () {
           return;
         }
 
-        // if new set includes all the origin selectors, it's a candidate
         const newSelectors = generateSelectorSet(newRule.selector);
-        if (isSuperset(newSelectors, originSelectors)) {
-          // remove all dupes from origin
-          newRule.walkDecls(function checkNewDecls(decl) {
-            if (originProps.has(decl.prop)) {
-              originRule.walkDecls(decl.prop, function removeDecl(decl) {
-                decl.remove();
-              });
-              originProps.delete(decl.prop);
+
+        // if the origin is a superset of the new, check for forward redundancy
+        // in the importance cascade
+        if (isSuperset(originSelectors, newSelectors)) {
+          newRule.walkDecls(function checkForwardRedundancy(decl) {
+            if (originProps[decl.prop] &&
+                originProps[decl.prop].important &&
+                !decl.important) {
+              decl.remove();
             }
           });
-          // finally, if this leaves the origin rule empty, kill it
-          if (originProps.size === 0) {
-            originRule.remove();
-          }
+        }
+
+        // new selector supersets are candidates for reducing backward
+        // redundancy
+        if (isSuperset(newSelectors, originSelectors)) {
+          // check if we have a duplicate of an origin prop
+          newRule.walkDecls(function checkBackwardRedundancy(decl) {
+            if (originProps[decl.prop]) {
+              // account for backwards-looking !importance cascade
+              if (!originProps[decl.prop].important ||
+                  (originProps[decl.prop].important &&
+                   decl.important)) {
+                // delete original prop if all conditions are satisfied
+                originRule.walkDecls(decl.prop, function removeDecl(decl) {
+                  decl.remove();
+                });
+                delete originProps[decl.prop];
+              }
+            }
+          });
+        }
+
+        // finally, if these actions leave either rule empty, kill it
+        if (Object.keys(originProps).length === 0) {
+          originRule.remove();
+        }
+        if (newRule.nodes.length === 0) {
+          newRule.remove();
         }
       });
     });
@@ -78,9 +104,14 @@ function generateSelectorSet(selector) {
  *   subset (Set): the proposed subset
  *
  * Returns:
- *   true if the first set is a superset of the second, false otherwse
+ *   true if the first set is a superset of the second, false otherwse. An
+ *     empty superset or subset automatically resolves to false
  */
 function isSuperset(superset, subset) {
+  // empty sets do not apply to this question
+  if (superset.size === 0 || subset.size === 0) {
+    return false;
+  }
   for (let el of subset) {
     if (!superset.has(el)) {
       return false;

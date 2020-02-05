@@ -132,7 +132,6 @@ it('is not thrown off by formatting', () => {
 });
 
 
-/*
 it('respects the effect of !important on the cascade', () => {
   return run(`
 .foo {
@@ -155,9 +154,8 @@ it('respects the effect of !important on the cascade', () => {
 }
 `);
 });
-*/
 
-/*
+
 it('handles multiple !importants', () => {
   return run(`
 .foo {
@@ -178,7 +176,7 @@ it('handles multiple !importants', () => {
 }
 `);
 });
-*/
+
 
 /*
 it('combines adjacent occurrences of the same property', () => {
