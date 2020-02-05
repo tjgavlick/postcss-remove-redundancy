@@ -10,28 +10,49 @@ function run(input, output, opts) {
 }
 
 
-// it('runs', () => {
-//   return run('a { }', 'a { }');
-// });
+it('runs', () => {
+  return run('', '');
+});
 
 
-// it('does not touch unrelated rules', () => {
-//   return run(`
-// .foo {
-//   display: block;
-// }
-// .bar {
-//   display: inline-block;
-// }
-// `, `
-// .foo {
-//   display: block;
-// }
-// .bar {
-//   display: inline-block;
-// }
-// `);
-// });
+it('does not touch unrelated rules', () => {
+  return run(`
+.foo {
+  display: block;
+}
+.bar {
+  display: inline-block;
+}
+`, `
+.foo {
+  display: block;
+}
+.bar {
+  display: inline-block;
+}
+`);
+});
+
+
+it('kills empty rules', () => {
+  return run(`
+.foo {
+  display: block;
+}
+.bar {
+}
+.baz {
+  color: #000;
+}
+`, `
+.foo {
+  display: block;
+}
+.baz {
+  color: #000;
+}
+`);
+});
 
 
 it('collapses a redundant rule', () => {
@@ -50,23 +71,22 @@ it('collapses a redundant rule', () => {
 });
 
 
-// it('collapses into a compound rule', () => {
-//   return run(`
-// .foo {
-//   display: block;
-// }
-// .foo, .bar {
-//   display: inline-block;
-// }
-// `, `
-// .foo, .bar {
-//   display: inline-block;
-// }
-// `);
-// });
+it('collapses into a compound rule', () => {
+  return run(`
+.foo {
+  display: block;
+}
+.foo, .bar {
+  display: inline-block;
+}
+`, `
+.foo, .bar {
+  display: inline-block;
+}
+`);
+});
 
 
-/*
 it('correctly places collapsed rules', () => {
   return run(`
 .foo {
@@ -91,9 +111,8 @@ it('correctly places collapsed rules', () => {
 }
 `);
 });
-*/
 
-/*
+
 it('is not thrown off by formatting', () => {
   return run(`
 .foo + .bar {
@@ -111,7 +130,7 @@ it('is not thrown off by formatting', () => {
 }
 `);
 });
-*/
+
 
 /*
 it('respects the effect of !important on the cascade', () => {

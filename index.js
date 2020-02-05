@@ -3,20 +3,47 @@ const selectorParser = require('postcss-selector-parser');
 
 module.exports = postcss.plugin('postcss-remove-redundancy', function () {
   return function (root) {
-    root.walkRules(function (originRule) {
+    root.walkRules(function walkRulesOuter(originRule) {
       const originSelectors = generateSelectorSet(originRule.selector);
       const originStart = originRule.source.start;
+      const originProps = new Set();
 
-      root.walkRules(function (newRule) {
+      // populate set of this node's declarations for quick checking later
+      originRule.walkDecls(function gatherOriginProps(decl) {
+        originProps.add(decl.prop);
+      });
+
+      // if rule is empty, kill it and move on
+      if (originProps.size === 0) {
+        originRule.remove();
+        return;
+      }
+
+      root.walkRules(function walkRulesInner(newRule) {
         // do not process until we're past our origin point in the stylesheet
         const newStart = newRule.source.start;
-        if (newStart.line < originStart.line || (newStart.line === originStart.line && newStart.column <= originStart.column)) {
+        if (newStart.line < originStart.line ||
+            (newStart.line === originStart.line &&
+             newStart.column <= originStart.column)) {
           return;
         }
 
+        // if new set includes all the origin selectors, it's a candidate
         const newSelectors = generateSelectorSet(newRule.selector);
         if (isSuperset(newSelectors, originSelectors)) {
-          // we have a possible candidate for redundancy
+          // remove all dupes from origin
+          newRule.walkDecls(function checkNewDecls(decl) {
+            if (originProps.has(decl.prop)) {
+              originRule.walkDecls(decl.prop, function removeDecl(decl) {
+                decl.remove();
+              });
+              originProps.delete(decl.prop);
+            }
+          });
+          // finally, if this leaves the origin rule empty, kill it
+          if (originProps.size === 0) {
+            originRule.remove();
+          }
         }
       });
     });
