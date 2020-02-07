@@ -124,7 +124,7 @@ it('is not thrown off by formatting', () => {
   font-size: 2em;
 }
 `, `
-.foo  +     .bar {
+.foo + .bar {
   display: block;
   font-size: 2em;
 }
@@ -178,7 +178,6 @@ it('handles multiple !importants', () => {
 });
 
 
-/*
 it('combines adjacent occurrences of the same property', () => {
   return run(`
 .foo, .bar {
@@ -193,9 +192,8 @@ it('combines adjacent occurrences of the same property', () => {
 }
 `);
 });
-*/
 
-/*
+
 it('does not combine non-adjacent occurrences of the same property', () => {
   return run(`
 .foo {
@@ -219,7 +217,67 @@ it('does not combine non-adjacent occurrences of the same property', () => {
 }
 `);
 });
-*/
+
+
+it('combines adjacent occurrences of a majority of properties', () => {
+  return run(`
+.foo, .bar {
+  font-size: 2em;
+  font-weight: 400;
+  color: #bada55;
+}
+.bar, .baz {
+  font-size: 2em;
+  color: #bada55;
+  font-weight: 700;
+}
+`, `
+.bar, .baz, .foo {
+  font-size: 2em;
+  color: #bada55;
+}
+.foo, .bar {
+  font-weight: 400;
+}
+.bar, .baz {
+  font-weight: 700;
+}
+`);
+});
+
+
+it('does not combine adjacent rules with a non-majority of shared properties', () => {
+  return run(`
+.foo, .bar {
+  display: block;
+  margin: 0 auto 2em;
+  text-align: center;
+  font-size: 2em;
+  font-weight: 400;
+  color: #bada55;
+}
+.bar, .baz {
+  font-size: 2em;
+  color: #bada55;
+  font-weight: 700;
+}
+`, `
+.foo, .bar {
+  display: block;
+  margin: 0 auto 2em;
+  text-align: center;
+  font-size: 2em;
+  font-weight: 400;
+  color: #bada55;
+}
+.bar, .baz {
+  font-size: 2em;
+  color: #bada55;
+  font-weight: 700;
+}
+`);
+});
+
 
 /*
 it('collapses properties across different selector permutations', () => {
